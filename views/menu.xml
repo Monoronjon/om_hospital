@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <menuitem id="menu_hospital_root" name='Hospital' sequence='0'></menuitem>
+
+
+
+<!--  For Patient_details menu -->
+  <menuitem id="menu_patient_master" name='Patient_details' sequence='0' parent="menu_hospital_root"></menuitem>
+  <menuitem id="menu_patient" name='Patient' sequence='0' parent="menu_patient_master" action="action_hospital_Patient"></menuitem>
+  <menuitem id="menu_female_patient" name='Female Patient' sequence='20' parent="menu_patient_master" action="action_hospital_female_Patient"></menuitem>
+  
+  
+
+<!--  For Appointments menu -->
+  <menuitem id="menu_appointment_master" name="Appointments" parent="menu_hospital_root" sequence="20"/>
+  <menuitem id="menu_appointment" name="Appointments" parent="menu_appointment_master" action="action_hospital_appointment" sequence="1"/>
+
+
+</odoo>
