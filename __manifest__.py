@@ -13,7 +13,7 @@
     'website': "http://www.yourcompany.com",
     'category': 'Uncategorized',
     'version': '1.0.0',
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'product'],
     'sequence': 1,
 
     'installable': True,
@@ -29,6 +29,7 @@
         'views/patient_view.xml',
         'views/female_patient_view.xml',
         'views/appointment_view.xml',
+        'views/patient_tag_view.xml',
         'views/menu.xml',
 
 

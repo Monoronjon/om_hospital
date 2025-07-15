@@ -5,10 +5,20 @@
     <field name="name">hospital.appointment.tree</field>
     <field name="model">hospital.appointment</field>
     <field name="arch" type="xml">
-      <tree create="1" delete="0">
+      <tree          decoration-success="state == 'done'"
+        decoration-info="state == 'draft'" sample="1" multi_edit="1">
         <field name="patient_id" string="Patient"/>
+        <field name="ref" optional="show"/>
+        <field name="doctor_id" widget="many2one_avatar"/>
+        <field name="gender" optional="hide"/>
         <field name="appointment_time"/>
-        <field name="booking_date"/>
+        <field name="booking_date" optional="show"/>
+        <field name="activity_ids" widget="list_activity"/>
+        <field name="state" widget="badge" 
+        decoration-success="state == 'done'"
+        decoration-info="state == 'draft'"
+        decoration-danger="state == 'cancel'"
+        decoration-muted="state == 'in_consultation'"/>
       </tree>
     </field>
   </record>
@@ -17,61 +27,90 @@
     <field name="name">hospital.appointment.form</field>
     <field name="model">hospital.appointment</field>
     <field name="arch" type="xml">
-      <form create="0" delete="0">
+      <form>
+        <header>
+          <button name="action_in_consultation" type="object" string="In Consultation" states="draft" class="oe_highlight" data-hotkey="f"/>
+          <button name="action_done" type="object" string="Mark as done" states="in_consultation" class="oe_highlight" data-hotkey="v"/>
+          <button name="action_cancel" type="object" string="Cancel" states="draft, in_consultation" class="oe_highlight" data-hotkey="z"/>
+          <button name="action_draft" type="object" string="Reset To draft" states="cancel, in_consultation" class="oe_highlight"/>
+          <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,in_consultation,done,cancel"/>
+        </header>
         <sheet>
           <div class="oe_title">
             <h1>
               <field name="priority" widget="priority" class="mr-4"/>
             </h1>
-            </div>
-            <group>
-              <group>
-                <field name="patient_id" string="Patient"/>
-                <field name="ref" string="Reference"/>
-                <field name="gender" string="Gender"/>
-                <field name="booking_date" string="Booking Date"/>
-              </group>
-              <group>
-                <field name="appointment_time" string="Appointment Time"/>
-              </group>
-            </group>
-            <notebook>
-              <page string="Prescription" name="prescription">
-                <field name="prescription" placeholder="Enter prescription details"/>
-              </page>
-              <page string="Pharmacy" name="pharmacy">
-
-            </page>
-            </notebook>
-          </sheet>
-          <div class="oe_chatter">
-            <field name="message_follower_ids" groups="base.group_user"/>
-            <field name="activity_ids"/>
-            <field name="message_ids"/>
           </div>
-        </form>
-      </field>
-    </record>
-    <!-- search view -->
-    <record id="view_hospital_appointment_search" model="ir.ui.view">
-      <field name="name">hospital.appointment.search</field>
-      <field name="model">hospital.appointment</field>
-      <field name="arch" type="xml">
-        <search> 
+          <group>
+            <group>
+              <field name="patient_id" string="Patient" default_focus="1"/>
+              <field name="ref" string="Reference"/>
+              <field name="gender" string="Gender"/>
+              <field name="doctor_id"/>
+              <field name="booking_date" string="Booking Date" help="date of booking"/>
+            </group>
+            <group>
+              <field name="hide_sales_price" groups="base.group_no_one"/>
+              <field name="appointment_time" string="Appointment Time"/>
+              <button name="action_test" type="object" string="Object Button" 
+                confirm="Are you sure you want to execute this python action?"
+                class="oe_highlight" groups="base.group_no_one"/>
+              <button name="%(om_hospital.action_hospital_Patient)d" type="action" string="Action Button" 
+                confirm="Are you sure you want to open the patient form?"
+                class="oe_highlight" groups="base.group_no_one"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Prescription" name="prescription">
+              <field name="prescription" placeholder="Enter prescription details" options="{'resizable': true}" />
+            </page>
+            <page string="Pharmacy" name="pharmacy">
+              <field name="pharmacy_line_ids">
+                <tree>
+                  <field name="product_id"/>
+                  <field name="qty"/>
+                  <field name="price_unit" attrs="{'column_invisible': [('parent.hide_sales_price', '=', True)]}"/>
+                </tree>
+                <form>
+                  <group>
+                    <field name="product_id"/>
+                    <field name="qty"/>
+                    <field name="price_unit" attrs="{'column_invisible': [('parent.hide_sales_price', '=', True)]}"/>
+                  </group>
+                </form>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <div class="oe_chatter">
+          <field name="message_follower_ids" groups="base.group_user"/>
+          <field name="activity_ids"/>
+          <field name="message_ids"/>
+        </div>
+      </form>
+    </field>
+  </record>
+
+  <!-- search view -->
+  <record id="view_hospital_appointment_search" model="ir.ui.view">
+    <field name="name">hospital.appointment.search</field>
+    <field name="model">hospital.appointment</field>
+    <field name="arch" type="xml">
+      <search> 
       </search>
-      </field>
-    </record>
-    <!--   action view -->
-    <record id="action_hospital_appointment" model='ir.actions.act_window'>
-      <field name='name'>Appointments</field>
-      <field name='type'>ir.actions.act_window</field>
-      <field name='res_model'>hospital.appointment</field>
-      <field name='view_mode'>tree,form</field>
-      <field name='context'>{}</field>
-      <field name='help' type='html'>
-        <p class='O_view_nocontent_smiling_face'>
+    </field>
+  </record>
+  <!--   action view -->
+  <record id="action_hospital_appointment" model='ir.actions.act_window'>
+    <field name='name'>Appointments</field>
+    <field name='type'>ir.actions.act_window</field>
+    <field name='res_model'>hospital.appointment</field>
+    <field name='view_mode'>tree,form</field>
+    <field name='context'>{}</field>
+    <field name='help' type='html'>
+      <p class='O_view_nocontent_smiling_face'>
         Create your first Appointments.
      </p>
-      </field>
-    </record>
-  </odoo>
+    </field>
+  </record>
+</odoo>

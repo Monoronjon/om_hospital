@@ -16,6 +16,8 @@ class HospitalPatient(models.Model):
     gender = fields.Selection([('male','Male'), ('female','Female')], string='Gender', tracking=True)
     active = fields.Boolean(string='Active', default=True)
     appointment_id = fields.Many2one('hospital.appointment', string='Appointments')
+    image = fields.Image(string='Image', max_width=200, max_height=200, attachment=True)
+    tag_ids = fields.Many2many('patient.tag', string='Tags')
 
 
     @api.depends('date_of_birth')
